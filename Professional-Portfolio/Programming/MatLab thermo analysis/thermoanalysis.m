@@ -193,7 +193,11 @@ for iScenario = 1:numel(scenarioNames)
         for iPrice = 1:numel(energyPricesPerkWh)
             price = energyPricesPerkWh(iPrice);
             annualRevenueMUSD = annualEnergy_kWh * price / 1e6;
-            annualSteamCostMUSD = annualEnergy_kWh * baseSteamCostPerkWh / 1e6;
+            % Steam cost based on ideal-work-equivalent energy,
+            % before accounting for turbine isentropic efficiency.
+            annualSteamCostMUSD = ...
+                sum(dispatchMW .* (baseSteamCostPerkWh ./ EtaTurbine')) ...
+                * 1000 * annualOperatingHours / 1e6;
             annualAdditionalOpexMUSD = sum(dispatchMW .* 1000 .* annualOperatingHours .* ...
                 AdditionalOpexPerkWh') / 1e6;
             annualOperatingCostMUSD = annualSteamCostMUSD + annualAdditionalOpexMUSD;
